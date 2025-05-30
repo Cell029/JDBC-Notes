@@ -88,7 +88,7 @@ MySQL URL中的其它常用配置:
 
 - `serverTimezone`：MySQL 服务器时区(默认为 UTC,全球通用的标准时间),可以通过该参数来指定客户端和服务器的时区
 - `useSSL`：是否使用 SSL 安全传输协议来加密 JDBC 和 MySQL 数据库服务器之间的通信,默认为 true
-- `useUnicode`：是否使用 Unicode 编码进行数据传输,默认是 true 启用
+- `useUnicode`：是否使用 Unicode 编码进行数据传输,默认是 true 启用,这意味着无论数据源中使用的是什么编码方案,都会先将数据转换为 Unicode 编码进行传输，确保数据能够跨平台、跨数据库正确传输
 - `characterEncoding`：数据被传输到服务器之后,服务器采用哪一种字符集进行编码,默认为 UTF-8
 
 
@@ -126,6 +126,13 @@ System.out.println("插入了" + count + "条记录");
 stmt.close();
 conn.close();
 ```
+
+****
+# 三. JDBC 完成修改和删除
+
+修改:[UpdateJdbc.java](./MyJDBC/src/main/java/com/cell/firstcode/UpdateJdbc.java)
+
+删除:[DeleteJdbc.java](./MyJDBC/src/main/java/com/cell/firstcode/DeleteJdbc.java)
 
 
 
