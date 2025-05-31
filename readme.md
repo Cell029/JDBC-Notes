@@ -324,6 +324,23 @@ ResultSet rs = pstmt.executeQuery();
 启用批处理需要在URL后面添加这个的参数：rewriteBatchedStatements=true
 
 ****
+# 八. JDBC 调用存储过程
+
+[StoredProcedure.java](./MyJDBC/src/main/java/com/cell/stored_procedure/StoredProcedure.java)
+
+调用存储过程不再是使用 PreparedStatement ,而是使用它的子接口 CallableStatement,存储过程的参数类型和顺序必须完全匹配,对 OUT 和 INOUT 参数必须使用 registerOutParameter() 注册,
+可以通过 CallableStatement 获取返回值，但不能直接 return,需要通过 OUT 参数接收
+
+```java
+CallableStatement cs = conn.prepareCall("{call 存储过程名(参数列表)}");
+cs.setInt(1, 1001); // IN
+cs.registerOutParameter(2, Types.DOUBLE); // 对于 OUT 或 INOUT 类型的参数，必须调用
+cs.execute();
+double salary = cs.getDouble(2);
+```
+
+****
+
 
 
 
