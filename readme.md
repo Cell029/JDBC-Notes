@@ -201,7 +201,7 @@ String url = "jdbc:mysql://localhost:3306/jdbc-note?user=root&password=123456";
 Connection conn = DriverManager.getConnection(url);
 ```
 
-也可以传递 url 和一个 Properties 对象,把 url 后面的信息封装到 Properties 对象中:
+也可以传递 url 和一个 Properties 对象,把 url 后面的信息封装到 Properties 对象(本质上是一个 Map 集合)中:
 
 ```java
 String url = "jdbc:mysql://localhost:3306/jdbc";
@@ -216,6 +216,62 @@ Connection conn = DriverManager.getConnection(url, info);
 ```
 
 ****
+# 五. JDBC 实现查询
+
+[SelectJdbc.java](./MyJDBC/src/main/java/com/cell/firstcode/SelectJdbc.java)
+
+执行 insert delete update 语句的时候，调用 Statement 接口的 executeUpdate() 方法。
+执行 select 语句的时候，调用 Statement 接口的 executeQuery() 方法。执行 select 语句后返会回一个结果集对象：ResultSet,它是一个带有光标的表格,每次调用 rs.next(),光标向下一行移动,
+初始位置在第一行之前,一旦光标到达最后一行之后,rs.next() 返回 false,表示遍历结束,每次移动光标后,可以使用 getXXX() 方法获取当前行的数据(可以全部使用 getString(),也可也根据字段的具体类型使用对应的方法)
+
+可以使用字段下标获取数据(每一列对应一个下标,从 1 开始)
+
+```java
+String id = rs.getString(1);
+String name = rs.getString(2);
+String pwd = rs.getString(3);
+String realname = rs.getString(4);
+String gender = rs.getString(5);
+String tel = rs.getString(6);
+```
+
+也可也直接用列名获取,这种方式的可读性更高,但其底层使用的仍然是下标的方式:
+
+```java
+String id = rs.getString("id");
+String name = rs.getString("name");
+```
+
+****
+
+## 获取结果集的元数据信息
+
+ResultSetMetaData 是一个接口，可以通过 ResultSet 接口的 getMetaData() 方法获取，用于描述 ResultSet 中的元数据信息，即查询结果集的结构信息，例如查询结果集中包含了哪些列，每个列的数据类型、长度、标识符等
+
+```java
+ResultSetMetaData rsmd = rs.getMetaData();
+int columnCount = rsmd.getColumnCount();
+for (int i = 1; i <= columnCount; i++) {
+    System.out.println("列名：" + rsmd.getColumnName(i) + "，数据类型：" + rsmd.getColumnTypeName(i) + "，列的长度：" + rsmd.getColumnDisplaySize(i));
+}
+```
+
+****
+## 获取新增行的主键值
+
+如果要获取插入数据后的主键值，可以使用 Statement 接口的 executeUpdate() 方法的重载版本，该方法接受一个额外的参数，用于指定是否需要获取自动生成的主键值
+
+```java
+String sql = "insert into t_user(name,password,realname,gender,tel) values('zhangsan','111','张三','男','19856525352')";
+// 第一步
+int count = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+// 第二步
+rs = stmt.getGeneratedKeys();
+if(rs.next()){
+    int id = rs.getInt(1);
+    System.out.println("新增数据行的主键值：" + id);
+}
+```
 
 
 
