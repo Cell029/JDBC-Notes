@@ -315,7 +315,15 @@ ResultSet rs = pstmt.executeQuery();
 - 即使输入了 ' OR 1=1，也只会被当作普通字符串处理
 
 ****
+# 八. PreparedStatement 完成 CRUD
 
+[CRUD.package](./MyJDBC/src/main/java/com/cell/pstmt_crud)
+
+批处理操作:
+
+启用批处理需要在URL后面添加这个的参数：rewriteBatchedStatements=true
+
+****
 
 
 
