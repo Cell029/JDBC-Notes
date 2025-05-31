@@ -273,6 +273,13 @@ if(rs.next()){
 }
 ```
 
+****
+# 六. DbUtils 的封装
+
+[DbUtils.java](./MyJDBC/src/main/java/com/cell/firstcode/DbUtils.java)
+
+****
+
 
 
 
