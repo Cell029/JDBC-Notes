@@ -340,6 +340,12 @@ double salary = cs.getDouble(2);
 ```
 
 ****
+# 九. 实现简易的员工管理
+
+[Manager.java](./MyJDBC/src/main/java/com/cell/employee/Manager.java)
+
+****
+
 
 
 
