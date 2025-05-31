@@ -345,7 +345,14 @@ double salary = cs.getDouble(2);
 [Manager.java](./MyJDBC/src/main/java/com/cell/employee/Manager.java)
 
 ****
+# 10. 使用 DAO 改造员工管理
 
+[dao.package](./MyJDBC/src/main/java/com/cell/employee/dao)
+
+写 insert,update,delete 方法时,它们有很多共同的代码,唯一的区别就是参数不同,所以可以把它们一起封装到一个方法里,让这个方法接收 sql 语句和可变参数,让具体的 sql 编译与执行在这个方法里执行,
+而 select 则额外需要一个实体类来接收返回值,所以得使用到泛型,然后利用发射机制,将从数据库中获取到的数据封装到具体的对象中,然后在封装进集合中
+
+****
 
 
 
