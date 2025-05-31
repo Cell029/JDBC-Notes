@@ -279,8 +279,42 @@ if(rs.next()){
 [DbUtils.java](./MyJDBC/src/main/java/com/cell/firstcode/DbUtils.java)
 
 ****
+# 七. SQL 注入
 
+SQL 注入本质上是将数据当成了代码来执行,也就是 SQL 的拼接比 SQL 的编译更早执行,这就导致输入的数据全部被识别为字段内容,如果此时:
 
+```sql
+String sql = "SELECT * FROM users WHERE username = '" + userInput + "'";
+-- 输入以下内容:
+admin' OR '1'='1
+-- SQL 拼接后:
+SELECT * FROM users WHERE username = 'admin' OR '1'='1' -- 这条语句恒为真，意味着数据库将返回所有用户，直接绕过了身份验证
+```
+
+****
+解决办法:使用 PreparedStatement 类
+
+PreparedStatement 是 Statement 接口的子接口,它是一种预编译 SQL 模板 + 参数绑定的方式,可以自动将参数值与 SQL 语句逻辑分开,避免注入风险
+
+```java
+String sql = "select * from users where username = ? and password = ?";
+PreparedStatement pstmt = conn.prepareStatement(sql);
+pstmt.setString(1, username);
+pstmt.setString(2, password);
+ResultSet rs = pstmt.executeQuery();
+```
+
+- ? 是占位符,SQL 模板结构提前传给数据库,不能给占位符添加 `""` 或 `''`,否则会失效
+
+- SQL 编译只发生一次,可重复使用,Statement 每次使用都要重新编译 SQL,无缓存优化机制
+
+- 用户输入的数据通过 setXXX() 设置参数,占位符的下标从 1 开始
+
+- 参数值只作为“值”传入，而非语句的一部分
+
+- 即使输入了 ' OR 1=1，也只会被当作普通字符串处理
+
+****
 
 
 
