@@ -134,6 +134,89 @@ conn.close();
 
 删除:[DeleteJdbc.java](./MyJDBC/src/main/java/com/cell/firstcode/DeleteJdbc.java)
 
+****
+# 四. 注册驱动与连接数据库
+
+## 1. 注册驱动
+
+JDBC 是 Java 提供的一套访问数据库的标准 API，但不同数据库（如 MySQL、Oracle）有不同的实现。
+JDBC 本身不直接实现数据库连接，而是依赖于对应数据库厂商提供的驱动类（Driver）,所以在使用 JDBC 前必须告诉 JVM 用的是哪种数据库,
+然后加载并注册相应的数据库驱动类,一旦驱动注册成功,`DriverManager.getConnection()` 就可以根据传入的数据库 URL 找到合适的驱动来建立连接,如果没有注册驱动,
+那么 `DriverManager` 就不知道如何处理 URL ,也就无法与数据库建立连接
+
+注册驱动的方式:
+
+第一种:
+
+这种方式是自己 new 驱动对象，然后调用 DriverManager 的 registerDriver() 方法来完成驱动注册
+
+```java
+java.sql.Driver driver = new com.mysql.cj.jdbc.Driver();
+java.sql.DriverManager.registerDriver(driver);
+```
+
+第二种:
+
+这种是最常用的,在 `com.mysql.cj.jdbc.Driver` 类中有一个静态代码块,在这个静态代码块中调用了 `java.sql.DriverManager.registerDriver(new Driver());` 完成了驱动的注册,
+而 `Class.forName("com.mysql.cj.jdbc.Driver");` 代码的作用就是让 `com.mysql.cj.jdbc.Driver` 类完成加载,执行它的静态代码块
+
+```java
+Class.forName("com.mysql.cj.jdbc.Driver");
+```
+
+JDBC 4.0 后不用手动注册驱动:
+
+从JDBC 4.0(也就是Java6)版本开始,驱动的注册不需要再手动完成,由系统自动完成,但在实际的开发中有些数据库驱动程序不支持自动发现功能,仍然需要手动注册
+
+****
+## 2. 连接数据库
+
+动态连接数据库:
+
+为了程序的通用性,以及切换数据库的时候不需要修改 Java 程序(符合 OCP 开闭原则),建议将连接数据库的信息配置到属性文件中，例如：
+
+```xml
+driver=com.mysql.cj.jdbc.Driver
+url=jdbc:mysql://localhost:3306/jdbc-notes?useUnicode=true&serverTimezone=Asia/Shanghai&useSSL=true&characterEncoding=utf-8
+user=root
+password=123
+```
+
+然后使用IO流读取属性文件，动态获取连接数据库的信息：
+
+```java
+ResourceBundle bundle = ResourceBundle.getBundle("jdbc");
+String driver = bundle.getString("driver");
+String url = bundle.getString("url");
+String user = bundle.getString("user");
+String password = bundle.getString("password");
+```
+
+其他连接方式:
+
+这种方式参数只有一个 url,用户名和密码放在 url 当中:
+
+```java
+String url = "jdbc:mysql://localhost:3306/jdbc-note?user=root&password=123456";
+Connection conn = DriverManager.getConnection(url);
+```
+
+也可以传递 url 和一个 Properties 对象,把 url 后面的信息封装到 Properties 对象中:
+
+```java
+String url = "jdbc:mysql://localhost:3306/jdbc";
+Properties info = new Properties();
+info.setProperty("user","root");
+info.setProperty("password","123456");
+info.setProperty("useUnicode","true");
+info.setProperty("serverTimezone","Asia/Shanghai");
+info.setProperty("useSSL","true");
+info.setProperty("characterEncoding","utf-8");
+Connection conn = DriverManager.getConnection(url, info);
+```
+
+****
+
 
 
 
